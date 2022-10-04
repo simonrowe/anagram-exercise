@@ -10,7 +10,6 @@ class AnagramRepositoryTest {
 
     final AnagramRepository anagramRepository = new AnagramRepository();
 
-
     @Test
     void shouldAddAnagram() {
         anagramRepository.add("hello");

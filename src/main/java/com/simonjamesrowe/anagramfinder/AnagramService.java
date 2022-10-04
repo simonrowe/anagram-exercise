@@ -3,6 +3,7 @@ package com.simonjamesrowe.anagramfinder;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -19,14 +20,25 @@ public class AnagramService {
     @SneakyThrows
     public void findAnagrams(final File file) {
         final Stream<String> lines = Files.lines(file.toPath());
+        final AtomicReference<Integer> lastWordLength = new AtomicReference<>(0);
         lines
             .filter(StringUtils::hasText)
-            .forEach(anagramRepository::add);
+            .map(StringUtils::trimWhitespace)
+            .forEach(word -> {
+                if (lastWordLength.get() > 0 && word.length() > lastWordLength.get()) {
+                    anagramRepository.getAll().forEach(this::print);
+                    anagramRepository.clear();
+                }
+                anagramRepository.add(word);
+            });
 
         anagramRepository.getAll().forEach(this::print);
     }
 
     private void print(final Set<String> groupOfAnagrams) {
+        if (groupOfAnagrams.isEmpty()) {
+            return;
+        }
         System.out.println(groupOfAnagrams
                                .stream()
                                .sorted()
