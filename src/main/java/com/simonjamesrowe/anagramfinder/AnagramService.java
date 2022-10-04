@@ -26,12 +26,16 @@ public class AnagramService {
             .map(StringUtils::trimWhitespace)
             .forEach(word -> {
                 if (lastWordLength.get() > 0 && word.length() > lastWordLength.get()) {
-                    anagramRepository.getAll().forEach(this::print);
+                    outputAnagrams();
                     anagramRepository.clear();
                 }
                 anagramRepository.add(word);
             });
 
+        outputAnagrams();
+    }
+
+    private void outputAnagrams() {
         anagramRepository.getAll().forEach(this::print);
     }
 
