@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 public class AnagramService {
@@ -21,16 +22,18 @@ public class AnagramService {
     @SneakyThrows
     public void findAnagrams(final File file) {
         final Stream<String> lines = Files.lines(file.toPath());
-        lines.forEach(
-            line -> {
-                final Map<Character, Long> characterCount = WordUtils.countCharacters(line);
+        lines
+            .filter(StringUtils::hasText)
+            .forEach(
+                line -> {
+                    final Map<Character, Long> characterCount = WordUtils.countCharacters(line);
 
-                Optional.ofNullable(anagrams.putIfAbsent(characterCount, new LinkedHashSet<>(List.of(line))))
-                    .ifPresent(set -> set.add(line));
+                    Optional.ofNullable(anagrams.putIfAbsent(characterCount, new LinkedHashSet<>(List.of(line))))
+                        .ifPresent(set -> set.add(line));
 
-            });
+                });
 
-        anagrams.values().forEach(groupOfAnagrams -> print(groupOfAnagrams));
+        anagrams.values().forEach(this::print);
     }
 
     private void print(final Set<String> groupOfAnagrams) {
