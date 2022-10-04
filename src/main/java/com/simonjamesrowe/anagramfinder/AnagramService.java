@@ -2,38 +2,28 @@ package com.simonjamesrowe.anagramfinder;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 @Service
+@RequiredArgsConstructor
 public class AnagramService {
 
-    private final Map<Map<Character, Long>, Set<String>> anagrams = new LinkedHashMap<>();
+    private final AnagramRepository anagramRepository;
 
     @SneakyThrows
     public void findAnagrams(final File file) {
         final Stream<String> lines = Files.lines(file.toPath());
         lines
             .filter(StringUtils::hasText)
-            .forEach(
-                line -> {
-                    final Map<Character, Long> characterCount = WordUtils.countCharacters(line);
+            .forEach(anagramRepository::add);
 
-                    Optional.ofNullable(anagrams.putIfAbsent(characterCount, new LinkedHashSet<>(List.of(line))))
-                        .ifPresent(set -> set.add(line));
-
-                });
-
-        anagrams.values().forEach(this::print);
+        anagramRepository.getAll().forEach(this::print);
     }
 
     private void print(final Set<String> groupOfAnagrams) {
