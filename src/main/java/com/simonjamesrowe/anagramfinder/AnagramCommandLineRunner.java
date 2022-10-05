@@ -1,6 +1,8 @@
 package com.simonjamesrowe.anagramfinder;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,8 @@ public class AnagramCommandLineRunner implements CommandLineRunner {
         final File file = new File(args[0]);
         Assert.isTrue(file.exists(), args[0] + " Does not exist");
 
-        anagramService.findAnagrams(file);
+        try (final Stream<String> lines = Files.lines(file.toPath())) {
+            anagramService.findAnagrams(lines);
+        }
     }
 }

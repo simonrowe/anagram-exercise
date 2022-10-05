@@ -3,15 +3,15 @@ package com.simonjamesrowe.anagramfinder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.io.File;
+import java.util.stream.Stream;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -51,9 +51,7 @@ class AnagramCommandLineRunnerTest {
     void shouldFindAnagramsWhenFileExists() {
         final String testFilePath = "src/test/resources/example1.txt";
         anagramCommandLineRunner.run(testFilePath);
-        final ArgumentCaptor<File> argumentCaptor = ArgumentCaptor.forClass(File.class);
-        verify(anagramService, times(1)).findAnagrams(argumentCaptor.capture());
-        assertThat(argumentCaptor.getValue().getName()).isEqualTo("example1.txt");
+        verify(anagramService, times(1)).findAnagrams(isA(Stream.class));
     }
 
 }

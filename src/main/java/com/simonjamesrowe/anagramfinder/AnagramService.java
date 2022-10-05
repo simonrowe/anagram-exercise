@@ -1,10 +1,6 @@
 package com.simonjamesrowe.anagramfinder;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -16,36 +12,25 @@ import org.springframework.util.StringUtils;
 public class AnagramService {
 
     private final AnagramRepository anagramRepository;
+    private final AnagramResultWriter anagramResultWriter;
 
     @SneakyThrows
-    public void findAnagrams(final File file) {
-        final Stream<String> lines = Files.lines(file.toPath());
+    public void findAnagrams(final Stream<String> lines) {
         final AtomicReference<Integer> lastWordLength = new AtomicReference<>(0);
         lines
             .filter(StringUtils::hasText)
             .map(StringUtils::trimWhitespace)
             .forEach(word -> {
                 if (lastWordLength.get() > 0 && word.length() > lastWordLength.get()) {
-                    outputAnagrams();
+                    anagramResultWriter.writeResults(anagramRepository.getAll());
                     anagramRepository.clear();
                 }
-                anagramRepository.add(word);
+                lastWordLength.set(word.length());
+                anagramRepository.addWord(word);
             });
 
-        outputAnagrams();
+        anagramResultWriter.writeResults(anagramRepository.getAll());
     }
 
-    private void outputAnagrams() {
-        anagramRepository.getAll().forEach(this::print);
-    }
 
-    private void print(final Set<String> groupOfAnagrams) {
-        if (groupOfAnagrams.isEmpty()) {
-            return;
-        }
-        System.out.println(groupOfAnagrams
-                               .stream()
-                               .sorted()
-                               .collect(Collectors.joining(",")));
-    }
 }

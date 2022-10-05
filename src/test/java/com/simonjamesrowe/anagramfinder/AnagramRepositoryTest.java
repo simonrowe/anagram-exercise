@@ -12,19 +12,19 @@ class AnagramRepositoryTest {
 
     @Test
     void shouldAddAnagram() {
-        anagramRepository.add("hello");
+        anagramRepository.addWord("hello");
 
         assertThat(anagramRepository.getAll()).contains(Set.of("hello"));
 
-        anagramRepository.add("yolo");
+        anagramRepository.addWord("yolo");
 
         assertThat(anagramRepository.getAll()).contains(Set.of("hello"), Set.of("yolo"));
 
-        anagramRepository.add("olleh");
+        anagramRepository.addWord("olleh");
 
         assertThat(anagramRepository.getAll()).contains(Set.of("hello", "olleh"), Set.of("yolo"));
 
-        anagramRepository.add("llohe");
+        anagramRepository.addWord("llohe");
 
         assertThat(anagramRepository.getAll()).contains(Set.of("hello", "olleh", "llohe"), Set.of("yolo"));
     }

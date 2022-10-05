@@ -14,10 +14,10 @@ public class AnagramRepository {
 
     private final Map<Map<Character, Long>, Set<String>> anagrams = new LinkedHashMap<>();
 
-    public void add(final String line) {
-        final Map<Character, Long> characterCount = WordUtils.countCharacters(line);
-        Optional.ofNullable(anagrams.putIfAbsent(characterCount, new LinkedHashSet<>(List.of(line))))
-            .ifPresent(set -> set.add(line));
+    public void addWord(final String word) {
+        final Map<Character, Long> characterCount = WordUtils.countCharacters(word);
+        Optional.ofNullable(anagrams.putIfAbsent(characterCount, new LinkedHashSet<>(List.of(word))))
+            .ifPresent(set -> set.add(word));
     }
 
     public void clear() {
